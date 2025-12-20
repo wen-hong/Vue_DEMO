@@ -8,7 +8,11 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-app.use(cors());
+//app.use(cors());
+app.use(cors({
+    origin: '*', // 先暫時允許所有來源測試，之後可改成前端 URL
+    credentials: true
+}));
 app.use(express.json());
 
 // -------------------------------------------------
