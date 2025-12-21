@@ -1,2 +1,11 @@
+# Node
 node_modules/
+
+# Env
 .env
+
+# VS / IDE
+.vs/
+*.sqlite
+*.db
+*.log

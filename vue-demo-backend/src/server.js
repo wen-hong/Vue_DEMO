@@ -9,9 +9,26 @@ const app = express();
 
 // Middlewares
 //app.use(cors());
+//app.use(cors({
+//    origin: '*', // 先暫時允許所有來源測試，之後可改成前端 URL
+//    credentials: true
+//}));
+//app.use(express.json());
+const allowedOrigins = (process.env.FRONTEND_URL || '')
+    .split(',')
+    .map(o => o.trim())
+    .filter(Boolean);
+
 app.use(cors({
-    origin: '*', // 先暫時允許所有來源測試，之後可改成前端 URL
-    credentials: true
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('CORS blocked'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
 
@@ -27,7 +44,6 @@ app.get('/health', (req, res) => {
 // -------------------------------------------------
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    console.log("in login");
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password required' });
@@ -35,7 +51,7 @@ app.post('/login', async (req, res) => {
 
   try {
     // 使用 SERVICE_ROLE_KEY 登入（開發測試）
-    const { data, error } = await supabaseAdmin.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({ //await supabaseAdmin.auth.signInWithPassword({
       email,
       password
     });
@@ -58,7 +74,6 @@ app.post('/login', async (req, res) => {
 // Get current user (/me)
 // -------------------------------------------------
 app.get('/me', async (req, res) => {
-  console.log("in me");
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) {
@@ -78,34 +93,18 @@ app.get('/me', async (req, res) => {
     const user = data.user;
 
     // （可選）查 profiles
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('display_name, role')
-      .eq('id', user.id)
-      .single();
+      //const { data: profile } = await supabase //supabaseAdmin
+      //.from('profiles')
+      //.select('display_name, role')
+      //.eq('id', user.id)
+      //.single();
 
     res.json({
       id: user.id,
       email: user.email,
-      profile
+      //profile
     });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// -------------------------------------------------
-// Profiles list (開發測試，可保留或刪除)
-// -------------------------------------------------
-app.get('/profiles', async (req, res) => {
-  try {
-    const { data, error } = await supabaseAdmin.from('profiles').select('*');
-    if (error) {
-      return res.status(500).json({ error });
-    }
-    res.json(data);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
@@ -116,19 +115,15 @@ app.get('/profiles', async (req, res) => {
 // Register (新增使用者)
 // -------------------------------------------------
 app.post('/register', async (req, res) => {
-    console.log("in register")
     try {
         const { email, password, displayName } = req.body
-        console.log("in register email：" + email)
-        console.log("in register password：" + password)
-        console.log("in register displayName：" + displayName)
 
         if (!email || !password) {
             return res.status(400).json({ error: 'Email and password required' })
         }
 
         // 建立 Supabase Auth 使用者
-        const { data, error } = await supabaseAdmin.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({ //await supabaseAdmin.auth.signUp({
             email,
             password,
             //display_name: displayName || '',
@@ -140,19 +135,12 @@ app.post('/register', async (req, res) => {
 
         // 建立 profiles 資料
 
-        
-        await supabaseAdmin.from('profiles')
-        .update({
-            user_account: displayName || ''
-        })
-        .eq('id', data.user.id)
-        .select()
-        
-        //await supabaseAdmin.from('profiles').insert({
-        //    id: data.user.id,
-        //    email,
-        //    user_account: displayName || '',
+        //await supabase.from('profiles')  //await supabaseAdmin.from('profiles')
+        //.update({
+        //    user_account: displayName || ''
         //})
+        //.eq('id', data.user.id)
+        //.select()
 
         res.json({ message: 'Register success' })
     } catch (err) {

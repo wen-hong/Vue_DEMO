@@ -6,7 +6,6 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  console.log('in axios')
   const auth = useAuthStore()
   if (auth.token) {
     config.headers.Authorization = `Bearer ${auth.token}`
