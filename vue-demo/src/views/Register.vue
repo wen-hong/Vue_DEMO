@@ -17,18 +17,34 @@
 
         <div class="mb-3">
           <label class="form-label">密碼</label>
-          <input
-            v-model="password"
-            type="password"
-            class="form-control"
-            placeholder="至少 6 碼"
-            required
-          />
+          <div class="input-group">
+            <input
+              v-model="password"
+              :type="isVisible ? 'text' : 'password'"
+              class="form-control"
+              placeholder="至少 6 碼"
+              required
+            />
+            <a class="btn btn-outline-secondary" @click="toggleVisibility">
+              <i :class="isVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </a>
+          </div>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">顯示名稱（選填）</label>
-          <input v-model="displayName" type="text" class="form-control" placeholder="顯示名稱" />
+          <label class="form-label">再次確認密碼</label>
+          <div class="input-group">
+            <input
+              v-model="repassword"
+              :type="reisVisible ? 'text' : 'password'"
+              class="form-control"
+              placeholder="至少 6 碼"
+              required
+            />
+            <a class="btn btn-outline-secondary" @click="toggleVisibility('re')">
+              <i :class="reisVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </a>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 mt-3">註冊</button>
@@ -41,7 +57,7 @@
       </form>
 
       <div class="text-center mt-4">
-        <RouterLink to="/login">已經有帳號？前往登入</RouterLink>
+        <RouterLink to="/loginbackground/login">已經有帳號？前往登入</RouterLink>
       </div>
     </div>
   </div>
@@ -56,9 +72,21 @@ const router = useRouter()
 
 const email = ref('')
 const password = ref('')
-const displayName = ref('')
+const repassword = ref('')
+// const displayName = ref('')
 const error = ref('')
 const success = ref(false)
+const isVisible = ref(false)
+const reisVisible = ref(false)
+
+// 切換顯示狀態的方法
+const toggleVisibility = (v) => {
+  if (v == 're') {
+    reisVisible.value = !reisVisible.value
+  } else {
+    isVisible.value = !isVisible.value
+  }
+}
 
 const register = async () => {
   error.value = ''
@@ -69,18 +97,23 @@ const register = async () => {
     return
   }
 
+  if (password.value != repassword.value) {
+    error.value = '密碼不一致'
+    return
+  }
+
   try {
     await api.post('/register', {
       email: email.value,
       password: password.value,
-      displayName: displayName.value,
+      // displayName: displayName.value,
     })
 
     success.value = true
 
     // 1.5 秒後導向登入頁
     setTimeout(() => {
-      router.push('/login')
+      router.push('/loginbackground/login')
     }, 1500)
   } catch (err) {
     error.value = err.response?.data?.error || err.message || '註冊失敗'

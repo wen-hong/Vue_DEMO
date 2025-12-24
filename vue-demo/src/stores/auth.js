@@ -5,13 +5,30 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: localStorage.getItem('access_token'),
     user: null,
+    isReady: false,
   }),
 
   getters: {
-    isLogin: (state) => !!state.token,
+    isLogin: (state) => !!state.token && !!state.user,
   },
 
   actions: {
+    async init() {
+      if (!this.token) {
+        this.isReady = true
+        return
+      }
+
+      try {
+        await this.fetchMe()
+      } catch (err) {
+        // token 無效或過期
+        this.logout()
+      } finally {
+        this.isReady = true
+      }
+    },
+
     async login(email, password) {
       // 呼叫後端登入
       const res = await api.post('/login', { email, password })

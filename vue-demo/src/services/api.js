@@ -7,7 +7,6 @@ const api = axios.create({
 
 // 自動帶上 token
 api.interceptors.request.use((config) => {
-  console.log('in api')
   const token = localStorage.getItem('access_token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
@@ -15,5 +14,17 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
+
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.clear()
+      alert('登入已過期，請重新登入')
+      window.location.href = '/login'
+    }
+    return Promise.reject(err)
+  },
+)
 
 export default api
