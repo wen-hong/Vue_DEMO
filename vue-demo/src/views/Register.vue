@@ -53,7 +53,7 @@
           {{ error }}
         </p>
 
-        <p class="text-success text-center mt-3" v-if="success">註冊成功，請前往登入</p>
+        <p class="text-success text-center mt-3" v-if="success">註冊成功，請前往信箱認證</p>
       </form>
 
       <div class="text-center mt-4">
@@ -112,9 +112,9 @@ const register = async () => {
     success.value = true
 
     // 1.5 秒後導向登入頁
-    setTimeout(() => {
-      router.push('/loginbackground/login')
-    }, 1500)
+    // setTimeout(() => {
+    //   router.push('/loginbackground/login')
+    // }, 1500)
   } catch (err) {
     error.value = err.response?.data?.error || err.message || '註冊失敗'
   }
