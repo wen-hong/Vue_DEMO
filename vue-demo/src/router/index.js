@@ -1,12 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import Login from '../views/Login.vue'
-import Loginbackground from '@/views/Loginbackground.vue'
-import Home from '@/views/Home.vue'
-import Dashboard from '@/views/Dashboard.vue'
 import { useAuthStore } from '../stores/auth'
+
+// import Home from '@/views/Home.vue'
+// import HomeView from '../views/HomeView.vue'
+
+import Loginbackground from '@/views/Loginbackground.vue'
+import Login from '../views/Login.vue'
 import Register from '@/views/Register.vue'
+import Resetpassword from '@/views/Resetpassword.vue'
+
+import Dashboard from '@/views/Dashboard.vue'
 import Updprofiles from '@/views/Updprofiles.vue'
+import Calendarevent from '@/views/Calendarevent.vue'
+import Calendardashboard from '@/views/Calendardashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +46,19 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/inloginbackground',
+      name: 'inLoginbackground',
+      component: Loginbackground,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: 'resetpassword',
+          name: 'Resetpassword',
+          component: Resetpassword,
+        },
+      ],
+    },
     // {
     //   path: '/register',
     //   component: Register,
@@ -65,6 +84,16 @@ const router = createRouter({
           path: 'updprofiles',
           name: 'Updprofiles',
           component: Updprofiles,
+        },
+        {
+          path: 'calendarevent',
+          name: 'Calendarevent',
+          component: Calendarevent,
+        },
+        {
+          path: 'calendardashboard',
+          name: 'Calendardashboard',
+          component: Calendardashboard,
         },
       ],
     },

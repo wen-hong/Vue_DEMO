@@ -4,8 +4,26 @@
     <aside class="sidebar p-3">
       <h5 class="fw-bold mb-4">Adminator</h5>
       <ul class="nav flex-column gap-2">
-        <li class="nav-item" v-for="item in menu" :key="item">
-          <a class="nav-link text-dark">{{ item }}</a>
+        <!-- <li class="nav-item" v-for="item in menu" :key="item.label">
+          <RouterLink v-if="item.path" class="nav-link text-dark" :to="item.path">
+            {{ item.label }}
+          </RouterLink>
+
+          <span v-else class="nav-link text-dark">
+            {{ item.label }}
+          </span>
+        </li> -->
+        <!-- <RouterLink v-if="item.name" class="nav-link text-dark" :to="{ name: item.name }">
+          {{ item.label }}
+        </RouterLink> -->
+        <li class="nav-item" v-for="item in menu" :key="item.label">
+          <RouterLink v-if="item && item.name" class="nav-link text-dark" :to="{ name: item.name }">
+            {{ item.label }}
+          </RouterLink>
+
+          <span v-else class="nav-link text-dark">
+            {{ item.label }}
+          </span>
         </li>
       </ul>
     </aside>
@@ -23,7 +41,7 @@
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            Action
+            {{ curruserEmail }}
           </button>
           <ul class="dropdown-menu">
             <li>
@@ -31,10 +49,15 @@
                 UpDate UserInfo
               </RouterLink>
             </li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
+            <li>
+              <RouterLink class="dropdown-item" to="/inloginbackground/resetpassword">
+                Reset Password
+              </RouterLink>
+            </li>
+            <!-- <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li> -->
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" @click="logout">Logout</a></li>
+            <li><a class="dropdown-item text-danger" @click="logout">Logout</a></li>
           </ul>
         </div>
       </nav>
@@ -53,14 +76,20 @@ import { useRouter } from 'vue-router'
 
 const auth = useAuthStore()
 const router = useRouter()
-const menu = ['Dashboard', 'Email', 'Calendar', 'Charts', 'Forms', 'Tables']
+const curruserEmail = auth.user?.email
+const menu = [
+  //   { label: 'Dashboard', name: null },
+  //   { label: 'Email', name: null },
+  { label: 'Calendar', name: 'Calendarevent' },
+  { label: 'CalendarDashboard', name: 'Calendardashboard' },
+  //   { label: 'Forms', name: null },
+  //   { label: 'Tables', name: null },
+]
 
 const logout = () => {
   auth.logout()
   router.push('/loginbackground/login')
 }
-
-const todos = ['Call John for Dinner', 'Book Boss Flight', 'Hit the Gym', 'Give Purchase Report']
 </script>
 
 <style scoped>

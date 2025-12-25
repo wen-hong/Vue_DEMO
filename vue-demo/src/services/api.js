@@ -19,9 +19,18 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.clear()
-      alert('登入已過期，請重新登入')
-      window.location.href = '/login'
+      const url = err.response.config.url
+
+      if (url === '/login') {
+        // 登入失敗
+        return Promise.reject(err)
+      } else {
+        // token 過期或無效
+        localStorage.clear()
+        alert('登入已過期，請重新登入')
+        window.location.href = '/'
+        return
+      }
     }
     return Promise.reject(err)
   },
