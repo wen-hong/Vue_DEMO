@@ -5,29 +5,21 @@ import { useAuthStore } from '../stores/auth'
 // import HomeView from '../views/HomeView.vue'
 
 import Loginbackground from '@/views/Loginbackground.vue'
-import Login from '../views/Login.vue'
+import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import Resetpassword from '@/views/Resetpassword.vue'
+import Forgotpassword from '@/views/Forgotpassword.vue'
+import Forgotpasswordreset from '@/views/Forgotpasswordreset.vue'
 
 import Dashboard from '@/views/Dashboard.vue'
 import Updprofiles from '@/views/Updprofiles.vue'
 import Calendarevent from '@/views/Calendarevent.vue'
 import Calendardashboard from '@/views/Calendardashboard.vue'
+// import Calculator from '@/views/Calculator.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: HomeView,
-    // },
-    // {
-    //   path: '/login',
-    //   name: 'Login',
-    //   component: Login,
-    //   meta: { guestOnly: true },
-    // },
     {
       path: '/loginbackground',
       name: 'Loginbackground',
@@ -44,6 +36,16 @@ const router = createRouter({
           name: 'Register',
           component: Register,
         },
+        {
+          path: 'forgotpassword',
+          name: 'Forgotpassword',
+          component: Forgotpassword,
+        },
+        {
+          path: 'forgotpasswordreset',
+          name: 'Forgotpasswordreset',
+          component: Forgotpasswordreset,
+        },
       ],
     },
     {
@@ -59,22 +61,6 @@ const router = createRouter({
         },
       ],
     },
-    // {
-    //   path: '/register',
-    //   component: Register,
-    //   meta: { guestOnly: true },
-    // },
-    // {
-    //   path: '/',
-    //   component: Home,
-    //   meta: { requiresAuth: true },
-    // },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   component: () => import('../views/AboutView.vue'),
-    //   meta: { requiresAuth: true },
-    // },
     {
       path: '/dashboard',
       component: Dashboard,
@@ -95,6 +81,11 @@ const router = createRouter({
           name: 'Calendardashboard',
           component: Calendardashboard,
         },
+        // {
+        //   path: 'calculator',
+        //   name: 'Calculator',
+        //   component: Calculator,
+        // },
       ],
     },
     {

@@ -1,3 +1,60 @@
+<template>
+  <FullCalendar :options="calendarOptions" />
+
+  <!-- Bootstrap Modal -->
+  <div
+    class="modal fade"
+    id="calendarModal"
+    tabindex="-1"
+    aria-labelledby="calendarModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="calendarModalLabel">
+            {{ modalData.id ? '編輯事件' : '新增事件' }}
+          </h5>
+          <button type="button" class="btn-close" @click="bsModal.hide()" />
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">事件名稱</label>
+            <input class="form-control" v-model="modalData.title" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">描述</label>
+            <textarea class="form-control" rows="3" v-model="modalData.description" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">日期</label>
+            <input type="date" class="form-control" v-model="modalData.event_date" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">分類</label>
+            <select class="form-select" v-model="modalData.category">
+              <option disabled value="">請選擇分類</option>
+              <option v-for="c in categories" :key="c.value" :value="c.value">
+                {{ c.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-primary" @click="saveEvent">儲存</button>
+          <button v-if="modalData.id" class="btn btn-danger" @click="deleteEvent">刪除</button>
+          <button class="btn btn-secondary" @click="bsModal.hide()">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
@@ -25,7 +82,6 @@ const modalData = ref({
 
 let bsModal = null
 
-/* ------------------ methods ------------------ */
 const loadEvents = async () => {
   const categoryColorMap = {
     work: '#0d6efd',
@@ -148,59 +204,29 @@ onMounted(() => {
 })
 </script>
 
-<template>
-  <FullCalendar :options="calendarOptions" />
+<style scoped>
+/* 修改「星期」標題的顏色 (例如：週一、週二...) */
+:deep(.fc-col-header-cell-cushion) {
+  color: #555555; /* 改為你想要的顏色 */
+  text-decoration: none; /* 移除超連結底線 */
+}
 
-  <!-- Bootstrap Modal -->
-  <div
-    class="modal fade"
-    id="calendarModal"
-    tabindex="-1"
-    aria-labelledby="calendarModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="calendarModalLabel">
-            {{ modalData.id ? '編輯事件' : '新增事件' }}
-          </h5>
-          <button type="button" class="btn-close" @click="bsModal.hide()" />
-        </div>
+/* 修改「日期」數字的顏色 (例如：1, 2, 3...) */
+:deep(.fc-daygrid-day-number) {
+  color: #333333; /* 改為你想要的顏色 */
+  text-decoration: none;
+  padding: 5px;
+}
 
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">事件名稱</label>
-            <input class="form-control" v-model="modalData.title" />
-          </div>
+/* 修改「今天」的數字顏色 */
+:deep(.fc-day-today .fc-daygrid-day-number) {
+  color: #ff0000 !important; /* 強制改為紅色 */
+  font-weight: bold;
+}
 
-          <div class="mb-3">
-            <label class="form-label">描述</label>
-            <textarea class="form-control" rows="3" v-model="modalData.description" />
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">日期</label>
-            <input type="date" class="form-control" v-model="modalData.event_date" />
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">分類</label>
-            <select class="form-select" v-model="modalData.category">
-              <option disabled value="">請選擇分類</option>
-              <option v-for="c in categories" :key="c.value" :value="c.value">
-                {{ c.label }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button class="btn btn-primary" @click="saveEvent">儲存</button>
-          <button v-if="modalData.id" class="btn btn-danger" @click="deleteEvent">刪除</button>
-          <button class="btn btn-secondary" @click="bsModal.hide()">取消</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
+/* 修改週末的顏色 */
+:deep(.fc-day-sat .fc-daygrid-day-number),
+:deep(.fc-day-sun .fc-daygrid-day-number) {
+  color: #d9534f;
+}
+</style>

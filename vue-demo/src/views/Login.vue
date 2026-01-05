@@ -10,22 +10,7 @@
 
         <div class="mb-3">
           <label class="form-label">密碼</label>
-          <div class="input-group">
-            <!-- 根據 isVisible 切換 type 為 'text' 或 'password' -->
-            <input
-              :type="isVisible ? 'text' : 'password'"
-              class="form-control"
-              v-model="password"
-              placeholder="請輸入密碼"
-            />
-
-            <!-- 點擊按鈕切換狀態 -->
-
-            <!-- 這裡可以使用 Bootstrap Icons 或 FontAwesome -->
-            <a class="btn btn-outline-secondary" @click="toggleVisibility">
-              <i :class="isVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-            </a>
-          </div>
+          <PasswordInput v-model="password" placeholder="請輸入密碼" required />
         </div>
 
         <button type="submit" class="btn btn-success w-100 py-2 mt-3">登入</button>
@@ -35,6 +20,8 @@
         </p>
         <!-- <RouterLink to="/register">尚未註冊？建立帳號</RouterLink> -->
         <RouterLink to="/loginbackground/register">尚未註冊？建立帳號</RouterLink>
+        <br />
+        <RouterLink to="/loginbackground/forgotpassword">忘記密碼</RouterLink>
       </form>
     </div>
   </div>
@@ -45,6 +32,7 @@ import { ref } from 'vue'
 // import api from '@/services/api'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import PasswordInput from '@/components/form/PasswordInput.vue'
 
 const email = ref('')
 const password = ref('')
@@ -52,11 +40,6 @@ const error = ref('')
 const router = useRouter()
 const auth = useAuthStore()
 const isVisible = ref(false) // 控制是否顯示明碼
-
-// 切換顯示狀態的方法
-const toggleVisibility = () => {
-  isVisible.value = !isVisible.value
-}
 
 const login = async () => {
   error.value = ''

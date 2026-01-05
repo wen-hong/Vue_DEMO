@@ -4,18 +4,6 @@
     <aside class="sidebar p-3">
       <h5 class="fw-bold mb-4">Adminator</h5>
       <ul class="nav flex-column gap-2">
-        <!-- <li class="nav-item" v-for="item in menu" :key="item.label">
-          <RouterLink v-if="item.path" class="nav-link text-dark" :to="item.path">
-            {{ item.label }}
-          </RouterLink>
-
-          <span v-else class="nav-link text-dark">
-            {{ item.label }}
-          </span>
-        </li> -->
-        <!-- <RouterLink v-if="item.name" class="nav-link text-dark" :to="{ name: item.name }">
-          {{ item.label }}
-        </RouterLink> -->
         <li class="nav-item" v-for="item in menu" :key="item.label">
           <RouterLink v-if="item && item.name" class="nav-link text-dark" :to="{ name: item.name }">
             {{ item.label }}
@@ -82,7 +70,7 @@ const menu = [
   //   { label: 'Email', name: null },
   { label: 'Calendar', name: 'Calendarevent' },
   { label: 'CalendarDashboard', name: 'Calendardashboard' },
-  //   { label: 'Forms', name: null },
+  // { label: 'Calculator', name: 'Calculator' },
   //   { label: 'Tables', name: null },
 ]
 

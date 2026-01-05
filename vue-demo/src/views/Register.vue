@@ -17,35 +17,15 @@
 
         <div class="mb-3">
           <label class="form-label">密碼</label>
-          <div class="input-group">
-            <input
-              v-model="password"
-              :type="isVisible ? 'text' : 'password'"
-              class="form-control"
-              placeholder="至少 6 碼"
-              required
-            />
-            <a class="btn btn-outline-secondary" @click="toggleVisibility">
-              <i :class="isVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-            </a>
-          </div>
+          <PasswordInput v-model="password" placeholder="至少 6 碼" required />
         </div>
 
         <div class="mb-3">
           <label class="form-label">再次確認密碼</label>
-          <div class="input-group">
-            <input
-              v-model="repassword"
-              :type="reisVisible ? 'text' : 'password'"
-              class="form-control"
-              placeholder="至少 6 碼"
-              required
-            />
-            <a class="btn btn-outline-secondary" @click="toggleVisibility('re')">
-              <i :class="reisVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-            </a>
-          </div>
+          <PasswordInput v-model="repassword" placeholder="至少 6 碼" required />
         </div>
+
+        <PasswordRules :rules="rules" />
 
         <button type="submit" class="btn btn-primary w-100 mt-3">註冊</button>
 
@@ -64,41 +44,35 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
+import PasswordInput from '@/components/form/PasswordInput.vue'
+import PasswordRules from '@/components/form/PasswordRules.vue'
+import { getPasswordRules, validatePassword } from '@/utils/passwordValidator'
 
 const router = useRouter()
 
 const email = ref('')
 const password = ref('')
 const repassword = ref('')
-// const displayName = ref('')
 const error = ref('')
 const success = ref(false)
-const isVisible = ref(false)
-const reisVisible = ref(false)
 
-// 切換顯示狀態的方法
-const toggleVisibility = (v) => {
-  if (v == 're') {
-    reisVisible.value = !reisVisible.value
-  } else {
-    isVisible.value = !isVisible.value
-  }
-}
+const rules = computed(() => getPasswordRules(password.value))
+
+const isStrongPassword = computed(() => Object.values(rules.value).every(Boolean))
 
 const register = async () => {
   error.value = ''
   success.value = false
 
-  if (password.value.length < 6) {
-    error.value = '密碼至少需 6 碼'
-    return
-  }
+  const errorMsg = validatePassword(password.value, repassword.value, {
+    requireStrong: true,
+  })
 
-  if (password.value != repassword.value) {
-    error.value = '密碼不一致'
+  if (errorMsg) {
+    error.value = errorMsg
     return
   }
 
@@ -106,7 +80,6 @@ const register = async () => {
     await api.post('/register', {
       email: email.value,
       password: password.value,
-      // displayName: displayName.value,
     })
 
     success.value = true

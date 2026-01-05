@@ -192,6 +192,69 @@ app.post('/register', async (req, res) => {
 })
 
 // -------------------------------------------------
+// Reset Password
+// -------------------------------------------------
+
+app.post('/auth/Resetpassword', authMiddleware, async (req, res) => {
+    const { currentPassword, newPassword, confirmPassword } = req.body
+
+    try {
+        const userEmail = req.user.email
+
+        // 驗證當前密碼
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email: userEmail,
+            password: currentPassword,
+        })
+
+        if (signInError || !signInData?.session) {
+            return res.status(400).json({ error: '當前密碼輸入錯誤' })
+        }
+
+        // 更新密碼（必須用 admin key）
+        const { data, error } = await supabaseAdmin.auth.admin.updateUserById(req.user.id, {
+            password: newPassword,
+        })
+
+        if (error) return res.status(400).json({ error: error.message })
+
+        return res.json({ message: '密碼更新成功' })
+    } catch (err) {
+        console.error(err)
+        return res.status(500).json({ error: 'Server error' })
+    }
+})
+
+// -------------------------------------------------
+// Forgot Password (send reset email)
+// -------------------------------------------------
+app.post('/auth/forgotpassword', async (req, res) => {
+    const { email } = req.body
+
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' })
+    }
+
+    try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${process.env.FRONTEND_URL}`
+        })
+
+        // 為安全起見，不透露帳號是否存在
+        if (error) {
+            console.error(error)
+        }
+
+        return res.json({
+            message: 'If this email exists, a reset link has been sent.'
+        })
+    } catch (err) {
+        console.error(err)
+        return res.status(500).json({ error: 'Server error' })
+    }
+})
+
+// -------------------------------------------------
 // Calendar取得事件
 // -------------------------------------------------
 
@@ -325,48 +388,6 @@ app.get('/calendar/stats', authMiddleware, async (req, res) => {
         res.json(Object.values(map))
     } catch (err) {
         res.status(500).json({ error: 'Server error' })
-    }
-})
-
-// -------------------------------------------------
-// Reset Password
-// -------------------------------------------------
-
-app.post('/auth/Resetpassword', authMiddleware, async (req, res) => {
-    const { currentPassword, newPassword, confirmPassword } = req.body
-
-    //if (!currentPassword || !newPassword || !confirmPassword) {
-    //    return res.status(400).json({ error: '所有欄位皆需填寫' })
-    //}
-
-    //if (newPassword !== confirmPassword) {
-    //    return res.status(400).json({ error: '新密碼與確認密碼不一致' })
-    //}
-
-    try {
-        const userEmail = req.user.email
-
-        // 驗證當前密碼
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            email: userEmail,
-            password: currentPassword,
-        })
-
-        if (signInError || !signInData?.session) {
-            return res.status(400).json({ error: '當前密碼輸入錯誤' })
-        }
-
-        // 更新密碼（必須用 admin key）
-        const { data, error } = await supabaseAdmin.auth.admin.updateUserById(req.user.id, {
-            password: newPassword,
-        })
-
-        if (error) return res.status(400).json({ error: error.message })
-
-        return res.json({ message: '密碼更新成功' })
-    } catch (err) {
-        console.error(err)
-        return res.status(500).json({ error: 'Server error' })
     }
 })
 
