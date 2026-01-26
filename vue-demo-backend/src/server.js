@@ -131,14 +131,19 @@ app.put(
 
         const payload = {}
 
-        // 若你允許 user_name 可為空字串，那就不要 trim 判斷，改成判斷 !== undefined
         if (typeof req.body.user_name === 'string' && req.body.user_name.trim() !== '') {
             payload.user_name = req.body.user_name.trim()
         }
 
-        // birth 依你 schema 可能是 date / text
-        if (typeof req.body.birth === 'string' && req.body.birth.trim() !== '') {
-            payload.birth = req.body.birth.trim()
+        const birthRaw = req.body.birth
+        if (typeof birthRaw === 'string') {
+            const v = birthRaw.trim()
+            if (v && v !== 'null' && v !== 'undefined') {
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+                    return res.status(400).json({ error: 'birth must be YYYY-MM-DD' })
+                }
+                payload.birth = v
+            }
         }
 
         if (req.body.sex !== undefined && req.body.sex !== '') {
