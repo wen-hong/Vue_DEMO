@@ -63,6 +63,7 @@ app.get('/health', (req, res) => {
 // Login
 // -------------------------------------------------
 app.post('/login', async (req, res) => {
+    console.log(process.env.ENV);
     const { email, password } = req.body
 
     if (!email || !password) {
@@ -128,12 +129,29 @@ app.put(
     upload.single('avatar'),
     async (req, res) => {
 
-        const payload = {
-            user_name: req.body.user_name,
-            birth: req.body.birth,
-            sex: req.body.sex,
-            update_at: new Date(),
+        //const payload = {
+        //    user_name: req.body.user_name,
+        //    birth: req.body.birth,
+        //    sex: req.body.sex,
+        //    update_at: new Date(),
+        //}
+        const payload = {}
+
+        // 若你允許 user_name 可為空字串，那就不要 trim 判斷，改成判斷 !== undefined
+        if (typeof req.body.user_name === 'string' && req.body.user_name.trim() !== '') {
+            payload.user_name = req.body.user_name.trim()
         }
+
+        // birth 依你 schema 可能是 date / text
+        if (typeof req.body.birth === 'string' && req.body.birth.trim() !== '') {
+            payload.birth = req.body.birth.trim()
+        }
+
+        if (typeof req.body.sex === 'string' && req.body.sex.trim() !== '') {
+            payload.sex = req.body.sex.trim()
+        }
+
+        payload.update_at = new Date()
 
         // 有選圖片才處理
         if (req.file) {
