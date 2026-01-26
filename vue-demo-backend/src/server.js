@@ -129,12 +129,6 @@ app.put(
     upload.single('avatar'),
     async (req, res) => {
 
-        //const payload = {
-        //    user_name: req.body.user_name,
-        //    birth: req.body.birth,
-        //    sex: req.body.sex,
-        //    update_at: new Date(),
-        //}
         const payload = {}
 
         // 若你允許 user_name 可為空字串，那就不要 trim 判斷，改成判斷 !== undefined
@@ -147,8 +141,14 @@ app.put(
             payload.birth = req.body.birth.trim()
         }
 
-        if (typeof req.body.sex === 'string' && req.body.sex.trim() !== '') {
-            payload.sex = req.body.sex.trim()
+        if (req.body.sex !== undefined && req.body.sex !== '') {
+            const sexValue = parseInt(req.body.sex, 10)
+
+            if (Number.isNaN(sexValue)) {
+                return res.status(400).json({ error: "sex must be a number" })
+            }
+
+            payload.sex = sexValue
         }
 
         payload.update_at = new Date()
