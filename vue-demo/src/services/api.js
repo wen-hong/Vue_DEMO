@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '@/router'
 
 const api = axios.create({
   // baseURL: 'http://localhost:3000',
@@ -28,7 +29,8 @@ api.interceptors.response.use(
         // token 過期或無效
         localStorage.clear()
         alert('登入已過期，請重新登入')
-        window.location.href = '/'
+        // window.location.href = '/'
+        router.push('/loginbackground/login')
         return
       }
     }
